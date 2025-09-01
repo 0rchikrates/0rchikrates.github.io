@@ -134,8 +134,7 @@
             return unicodeStr;
         }
 
-
-        // --- XML Loading and Display ---
+// --- XML Loading and Display ---
         
         /**
          * Fetches and parses the XML file, converts the content,
@@ -156,43 +155,61 @@
                 
                 container.innerHTML = '';
                 
-                // ***FIXED PART***
-                // Using getElementsByTagName instead of querySelectorAll to handle XML namespaces.
-                const speakerBlocks = xmlDoc.getElementsByTagName('sp');
-                
-                if (speakerBlocks.length === 0) {
-                    container.innerHTML = '<p class="text-red-500">Could not find any speaker blocks (`&lt;sp&gt;`) in the XML file. Please check the file structure. This can happen if the XML file uses a different structure or has errors.</p>';
+                // Get the main text body from the XML
+                const textBody = xmlDoc.getElementsByTagName('text')[0];
+                if (!textBody) {
+                    container.innerHTML = '<p class="text-red-500">Could not find the main text body (`&lt;text&gt;`) in the XML file.</p>';
                     return;
                 }
 
-                // Convert HTMLCollection to Array to use forEach
-                Array.from(speakerBlocks).forEach(block => {
-                    // Using getElementsByTagName for consistency and to avoid namespace issues.
-                    const speakerNameBeta = block.getElementsByTagName('speaker')[0]?.textContent;
-                    const paragraphBeta = block.getElementsByTagName('p')[0]?.textContent;
+                // Iterate through all child nodes of the text body
+                Array.from(textBody.childNodes).forEach(node => {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        const tagName = node.tagName.toLowerCase();
+                        
+                        // Handle speaker blocks
+                        if (tagName === 'sp') {
+                            const speakerNameBeta = node.getElementsByTagName('speaker')[0]?.textContent;
+                            const paragraphBeta = node.getElementsByTagName('p')[0]?.textContent;
+                            
+                            const speakerNameUnicode = betaCodeToUnicode(speakerNameBeta);
+                            const paragraphUnicode = betaCodeToUnicode(paragraphBeta);
 
-                    // Convert both to Unicode
-                    const speakerNameUnicode = betaCodeToUnicode(speakerNameBeta);
-                    const paragraphUnicode = betaCodeToUnicode(paragraphBeta);
-
-                    // Create elements to display the content
-                    if (speakerNameUnicode) {
-                        const speakerDiv = document.createElement('div');
-                        speakerDiv.className = 'speaker';
-                        speakerDiv.textContent = speakerNameUnicode;
-                        container.appendChild(speakerDiv);
-                    }
-                    
-                    if (paragraphUnicode) {
-                        const p = document.createElement('p');
-                        p.textContent = paragraphUnicode;
-                        container.appendChild(p);
+                            if (speakerNameUnicode) {
+                                const speakerDiv = document.createElement('div');
+                                speakerDiv.className = 'speaker';
+                                speakerDiv.textContent = speakerNameUnicode;
+                                container.appendChild(speakerDiv);
+                            }
+                            
+                            if (paragraphUnicode) {
+                                const p = document.createElement('p');
+                                p.textContent = paragraphUnicode;
+                                p.className = 'text-gray-700 leading-relaxed my-2'; // Adding these classes for consistency
+                                container.appendChild(p);
+                            }
+                        }
+                        
+                        // Handle milestone markers
+                        if (tagName === 'milestone') {
+                            const milestoneNumber = node.getAttribute('n');
+                            if (milestoneNumber) {
+                                const markerDiv = document.createElement('div');
+                                markerDiv.className = 'milestone-marker';
+                                markerDiv.textContent = milestoneNumber;
+                                container.appendChild(markerDiv);
+                            }
+                        }
                     }
                 });
 
+                if (container.innerHTML === '') {
+                    container.innerHTML = '<p class="text-red-500">No content was found in the XML file. Please check the file structure.</p>';
+                }
+
             } catch (error) {
                 console.error('Error loading or parsing XML:', error);
-                container.innerHTML = `<p class="text-red-500"><strong>Error:</strong> Could not load the text. Please check if the 'plato_text.xml' file exists and is accessible. See the console for more details.</p>`;
+                container.innerHTML = `<p class="text-red-500"><strong>Error:</strong> Could not load the text. Please check if the 'Perseus_text_1999.01.0175.xml' file exists and is accessible. See the console for more details.</p>`;
             }
         }
 
