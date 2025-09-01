@@ -156,21 +156,20 @@
                 
                 container.innerHTML = '';
                 
-                // ***MODIFIED PART***
-                // Instead of divs, we now look for speaker blocks ('sp')
-                // This selector matches the structure of your new XML file.
-                const speakerBlocks = xmlDoc.querySelectorAll('sp');
+                // ***FIXED PART***
+                // Using getElementsByTagName instead of querySelectorAll to handle XML namespaces.
+                const speakerBlocks = xmlDoc.getElementsByTagName('sp');
                 
                 if (speakerBlocks.length === 0) {
-                    container.innerHTML = '<p class="text-red-500">Could not find any speaker blocks (`&lt;sp&gt;`) in the XML file. Please check the file structure and the query selector in the script.</p>';
+                    container.innerHTML = '<p class="text-red-500">Could not find any speaker blocks (`&lt;sp&gt;`) in the XML file. Please check the file structure. This can happen if the XML file uses a different structure or has errors.</p>';
                     return;
                 }
 
-                speakerBlocks.forEach(block => {
-                    // Find the speaker's name within the block
-                    const speakerNameBeta = block.querySelector('speaker')?.textContent;
-                    // Find the paragraph text within the block
-                    const paragraphBeta = block.querySelector('p')?.textContent;
+                // Convert HTMLCollection to Array to use forEach
+                Array.from(speakerBlocks).forEach(block => {
+                    // Using getElementsByTagName for consistency and to avoid namespace issues.
+                    const speakerNameBeta = block.getElementsByTagName('speaker')[0]?.textContent;
+                    const paragraphBeta = block.getElementsByTagName('p')[0]?.textContent;
 
                     // Convert both to Unicode
                     const speakerNameUnicode = betaCodeToUnicode(speakerNameBeta);
