@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plato's Apology - Greek Text</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter font for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for the Greek text paragraphs */
+        .greek-text p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto max-w-4xl px-4 py-12">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900">Plato's Apology (17a)</h1>
+            <p class="text-lg text-gray-600 mt-2">Rendered from Beta Code XML</p>
+        </header>
+
+        <!-- The Greek text will be loaded here -->
+        <main id="text-container" class="bg-white p-8 rounded-lg shadow-md greek-text">
+            <p class="text-gray-500">Loading text...</p>
+        </main>
+
+        <footer class="text-center mt-10 text-gray-500 text-sm">
+            <p>A simple Greek text viewer. Built for GitHub Pages.</p>
+        </footer>
+    </div>
+
+    <script>
+        // --- Beta Code to Unicode Conversion ---
+        // This is the core logic that translates the text.
+
+        /**
+         * Converts a string from Greek Beta Code to Unicode.
+         * Handles capitalization, diacritics, and final sigmas.
+         * @param {string} betaCodeStr The Beta Code string to convert.
+         * @returns {string} The converted Unicode string.
+         */
+        function betaCodeToUnicode(betaCodeStr) {
+            const betaCodeMap = {
+                'A': 'α', 'B': 'β', 'C': 'ξ', 'D': 'δ', 'E': 'ε', 'F': 'φ', 'G': 'γ', 'H': 'η', 'I': 'ι', 'K': 'κ',
+                'L': 'λ', 'M': 'μ', 'N': 'ν', 'O': 'ο', 'P': 'π', 'Q': 'θ', 'R': 'ρ', 'S': 'σ', 'T': 'τ', 'U': 'υ',
+                'V': 'ς', 'W': 'ω', 'X': 'χ', 'Y': 'ψ', 'Z': 'ζ',
+                ')': '̓', // Smooth breathing
+                '(': '̔', // Rough breathing
+                '/': '́', // Acute
+                '=': '͂', // Circumflex
+                '\\': '̀', // Grave
+                '+': '̈', // Diaeresis
+                '|': 'ͅ', // Iota subscript
+            };
+
+            // Pre-combined characters for vowels with diacritics
+            const combinedChars = {
+                'α': {'̓': 'ἀ', '̔': 'ἁ', '́': 'ά', '̀': 'ὰ', '͂': 'ᾶ', '̓́': 'ἄ', '̓̀': 'ἂ', '̓͂': 'ἆ', '̔́': 'ἅ', '̔̀': 'ἃ', '̔͂': 'ἇ'},
+                'ε': {'̓': 'ἐ', '̔': 'ἑ', '́': 'έ', '̀': 'ὲ', '̓́': 'ἔ', '̓̀': 'ἒ', '̔́': 'ἕ', '̔̀': 'ἓ'},
+                'η': {'̓': 'ἠ', '̔': 'ἡ', '́': 'ή', '̀': 'ὴ', '͂': 'ῆ', 'ͅ': 'ῃ', '̓́': 'ἤ', '̓̀': 'ἢ', '̓͂': 'ἦ', '̔́': 'ἥ', '̔̀': 'ἣ', '̔͂': 'ἧ', '̓ͅ': 'ᾐ', '̔ͅ': 'ᾑ', '́ͅ': 'ῄ', '̀ͅ': 'ῂ', '͂ͅ': 'ῇ'},
+                'ι': {'̓': 'ἰ', '̔': 'ἱ', '́': 'ί', '̀': 'ὶ', '͂': 'ῖ', '̈': 'ϊ', '̓́': 'ἴ', '̓̀': 'ἲ', '̓͂': 'ἶ', '̔́': 'ἵ', '̔̀': 'ἳ', '̔͂': 'ἷ', '́̈': 'ΐ', '̀̈': 'ῒ'},
+                'ο': {'̓': 'ὀ', '̔': 'ὁ', '́': 'ό', '̀': 'ὸ', '̓́': 'ὄ', '̓̀': 'ὂ', '̔́': 'ὅ', '̔̀': 'ὃ'},
+                'υ': {'̓': 'ὐ', '̔': 'ὑ', '́': 'ύ', '̀': 'ὺ', '͂': 'ῦ', '̈': 'ϋ', '̓́': 'ὔ', '̓̀': 'ὒ', '̓͂': 'ὖ', '̔́': 'ὕ', '̔̀': 'ὓ', '̔͂': 'ὗ', '́̈': 'ΰ', '̀̈': 'ῢ'},
+                'ω': {'̓': 'ὠ', '̔': 'ὡ', '́': 'ώ', '̀': 'ὼ', '͂': 'ῶ', 'ͅ': 'ῳ', '̓́': 'ὤ', '̓̀': 'ὢ', '̓͂': 'ὦ', '̔́': 'ὥ', '̔̀': 'ὣ', '̔͂': 'ὧ', '̓ͅ': 'ᾠ', '̔ͅ': 'ᾡ', '́ͅ': 'ῴ', '̀ͅ': 'ῲ', '͂ͅ': 'ῷ'},
+                'ρ': {'̔': 'ῥ'}
+            };
+
+            let unicodeStr = '';
+            let isUpperCase = false;
+            let text = betaCodeStr.toUpperCase().trim();
+
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                
+                if (char === '*') {
+                    isUpperCase = true;
+                    continue;
+                }
+                
+                let mappedChar = betaCodeMap[char];
+                
+                if (mappedChar) {
+                    // Look ahead for diacritics
+                    let diacritics = '';
+                    while (i + 1 < text.length && '()=/\\+|'.includes(text[i + 1])) {
+                        diacritics += betaCodeMap[text[i + 1]];
+                        i++;
+                    }
+
+                    let baseChar = mappedChar;
+                    let finalChar = baseChar;
+                    
+                    if (diacritics && combinedChars[baseChar]) {
+                        // Attempt to find a pre-combined character
+                        // Sort diacritics to handle different orders, e.g., /) vs ()
+                        const sortedDiacritics = diacritics.split('').sort().join('');
+                        if(combinedChars[baseChar][sortedDiacritics]) {
+                             finalChar = combinedChars[baseChar][sortedDiacritics];
+                        } else if (combinedChars[baseChar][diacritics]) {
+                            finalChar = combinedChars[baseChar][diacritics];
+                        } else {
+                            // Fallback for unmapped combinations: apply diacritics after the character
+                            finalChar = baseChar + diacritics;
+                        }
+                    }
+
+                    // Handle capitalization and final sigma
+                    if (isUpperCase) {
+                        finalChar = finalChar.toUpperCase();
+                        isUpperCase = false;
+                    } else if (baseChar === 'σ' && (i === text.length - 1 || !text[i + 1].match(/[A-Z]/))) {
+                        // It's a final sigma if it's the last letter or followed by non-letter
+                        finalChar = 'ς';
+                    }
+                    
+                    unicodeStr += finalChar;
+                } else {
+                    // Add non-Greek characters (punctuation, etc.) directly
+                    unicodeStr += char;
+                    isUpperCase = false;
+                }
+            }
+            return unicodeStr;
+        }
+
+
+        // --- XML Loading and Display ---
+        
+        /**
+         * Fetches and parses the XML file, converts the content,
+         * and displays it on the page.
+         */
+        async function loadAndDisplayText() {
+            const container = document.getElementById('text-container');
+            
+            try {
+                // Fetch the XML file
+                const response = await fetch('plato_text.xml');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const xmlText = await response.text();
+
+                // Parse the XML string
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+                
+                // Clear the "Loading..." message
+                container.innerHTML = '';
+                
+                // Find all the text parts in the XML.
+                // This selector might need to be adjusted based on your XML file's structure.
+                // Here, we're looking for <div type="textpart" subtype="section"> tags.
+                const sections = xmlDoc.querySelectorAll('div[type="textpart"][subtype="section"]');
+                
+                if (sections.length === 0) {
+                    container.innerHTML = '<p class="text-red-500">Could not find any text sections in the XML file. Please check the file structure and the query selector in the script.</p>';
+                    return;
+                }
+
+                sections.forEach(section => {
+                    // Get the text content, which is in Beta Code
+                    const betaCode = section.textContent;
+                    
+                    // Convert it to Unicode
+                    const unicodeText = betaCodeToUnicode(betaCode);
+                    
+                    // Create a new paragraph element and add it to the page
+                    const p = document.createElement('p');
+                    p.textContent = unicodeText;
+                    container.appendChild(p);
+                });
+
+            } catch (error) {
+                console.error('Error loading or parsing XML:', error);
+                container.innerHTML = `<p class="text-red-500"><strong>Error:</strong> Could not load the text. Please check if the 'plato_text.xml' file exists and is accessible. See the console for more details.</p>`;
+            }
+        }
+
+        // Run the function after the page has loaded
+        document.addEventListener('DOMContentLoaded', loadAndDisplayText);
+    </script>
+</body>
+</html>
