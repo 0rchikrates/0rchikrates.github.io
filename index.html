@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alkibiades I - Greek Text</title>
+    <title>Plato's Alcibiades - Greek Text</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter font for clean typography -->
@@ -16,9 +16,15 @@
         }
         /* Style for the Greek text paragraphs */
         .greek-text p {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             line-height: 1.8;
             font-size: 1.25rem;
+        }
+        .speaker {
+            font-weight: 700;
+            color: #111827; /* gray-900 */
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
     </style>
 </head>
@@ -26,7 +32,7 @@
 
     <div class="container mx-auto max-w-4xl px-4 py-12">
         <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-gray-900">Alkibiades I</h1>
+            <h1 class="text-4xl font-bold text-gray-900">Plato's Alcibiades</h1>
             <p class="text-lg text-gray-600 mt-2">Rendered from Beta Code XML</p>
         </header>
 
@@ -51,6 +57,7 @@
          * @returns {string} The converted Unicode string.
          */
         function betaCodeToUnicode(betaCodeStr) {
+            if (!betaCodeStr) return ''; // Return empty string if input is null or undefined
             const betaCodeMap = {
                 'A': 'α', 'B': 'β', 'C': 'ξ', 'D': 'δ', 'E': 'ε', 'F': 'φ', 'G': 'γ', 'H': 'η', 'I': 'ι', 'K': 'κ',
                 'L': 'λ', 'M': 'μ', 'N': 'ν', 'O': 'ο', 'P': 'π', 'Q': 'θ', 'R': 'ρ', 'S': 'σ', 'T': 'τ', 'U': 'υ',
@@ -71,7 +78,7 @@
                 'η': {'̓': 'ἠ', '̔': 'ἡ', '́': 'ή', '̀': 'ὴ', '͂': 'ῆ', 'ͅ': 'ῃ', '̓́': 'ἤ', '̓̀': 'ἢ', '̓͂': 'ἦ', '̔́': 'ἥ', '̔̀': 'ἣ', '̔͂': 'ἧ', '̓ͅ': 'ᾐ', '̔ͅ': 'ᾑ', '́ͅ': 'ῄ', '̀ͅ': 'ῂ', '͂ͅ': 'ῇ'},
                 'ι': {'̓': 'ἰ', '̔': 'ἱ', '́': 'ί', '̀': 'ὶ', '͂': 'ῖ', '̈': 'ϊ', '̓́': 'ἴ', '̓̀': 'ἲ', '̓͂': 'ἶ', '̔́': 'ἵ', '̔̀': 'ἳ', '̔͂': 'ἷ', '́̈': 'ΐ', '̀̈': 'ῒ'},
                 'ο': {'̓': 'ὀ', '̔': 'ὁ', '́': 'ό', '̀': 'ὸ', '̓́': 'ὄ', '̓̀': 'ὂ', '̔́': 'ὅ', '̔̀': 'ὃ'},
-                'υ': {'̓': 'ὐ', '̔': 'ὑ', '́': 'ύ', '̀': 'ὺ', '͂': 'ῦ', '̈': 'ϋ', '̓́': 'ὔ', '̓̀': 'ὒ', '̓͂': 'ὖ', '̔́': 'ὕ', '̔̀': 'ὓ', '̔͂': 'ὗ', '́̈': 'ΰ', '̀̈': 'ῢ'},
+                'υ': {'̓': 'ὐ', '̔': 'ὑ', '́': 'ύ', '̀': 'ὺ', '͂': 'ῦ', '̈': 'ϋ', '̓́': 'ὔ', '̓̀': 'ᒒ', '̓͂': 'ὖ', '̔́': 'ὕ', '̔̀': 'ὓ', '̔͂': 'ὗ', '́̈': 'ΰ', '̀̈': 'ῢ'},
                 'ω': {'̓': 'ὠ', '̔': 'ὡ', '́': 'ώ', '̀': 'ὼ', '͂': 'ῶ', 'ͅ': 'ῳ', '̓́': 'ὤ', '̓̀': 'ὢ', '̓͂': 'ὦ', '̔́': 'ὥ', '̔̀': 'ὣ', '̔͂': 'ὧ', '̓ͅ': 'ᾠ', '̔ͅ': 'ᾡ', '́ͅ': 'ῴ', '̀ͅ': 'ῲ', '͂ͅ': 'ῷ'},
                 'ρ': {'̔': 'ῥ'}
             };
@@ -91,7 +98,6 @@
                 let mappedChar = betaCodeMap[char];
                 
                 if (mappedChar) {
-                    // Look ahead for diacritics
                     let diacritics = '';
                     while (i + 1 < text.length && '()=/\\+|'.includes(text[i + 1])) {
                         diacritics += betaCodeMap[text[i + 1]];
@@ -102,31 +108,25 @@
                     let finalChar = baseChar;
                     
                     if (diacritics && combinedChars[baseChar]) {
-                        // Attempt to find a pre-combined character
-                        // Sort diacritics to handle different orders, e.g., /) vs ()
                         const sortedDiacritics = diacritics.split('').sort().join('');
                         if(combinedChars[baseChar][sortedDiacritics]) {
                              finalChar = combinedChars[baseChar][sortedDiacritics];
                         } else if (combinedChars[baseChar][diacritics]) {
                             finalChar = combinedChars[baseChar][diacritics];
                         } else {
-                            // Fallback for unmapped combinations: apply diacritics after the character
                             finalChar = baseChar + diacritics;
                         }
                     }
 
-                    // Handle capitalization and final sigma
                     if (isUpperCase) {
                         finalChar = finalChar.toUpperCase();
                         isUpperCase = false;
                     } else if (baseChar === 'σ' && (i === text.length - 1 || !text[i + 1].match(/[A-Z]/))) {
-                        // It's a final sigma if it's the last letter or followed by non-letter
                         finalChar = 'ς';
                     }
                     
                     unicodeStr += finalChar;
                 } else {
-                    // Add non-Greek characters (punctuation, etc.) directly
                     unicodeStr += char;
                     isUpperCase = false;
                 }
@@ -145,41 +145,50 @@
             const container = document.getElementById('text-container');
             
             try {
-                // Fetch the XML file
                 const response = await fetch('Perseus_text_1999.01.0175.xml');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const xmlText = await response.text();
 
-                // Parse the XML string
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
                 
-                // Clear the "Loading..." message
                 container.innerHTML = '';
                 
-                // Find all the text parts in the XML.
-                // This selector might need to be adjusted based on your XML file's structure.
-                // Here, we're looking for <div type="textpart" subtype="section"> tags.
-                const sections = xmlDoc.querySelectorAll('div[type="textpart"][subtype="section"]');
+                // ***MODIFIED PART***
+                // Instead of divs, we now look for speaker blocks ('sp')
+                // This selector matches the structure of your new XML file.
+                const speakerBlocks = xmlDoc.querySelectorAll('sp');
                 
-                if (sections.length === 0) {
-                    container.innerHTML = '<p class="text-red-500">Could not find any text sections in the XML file. Please check the file structure and the query selector in the script.</p>';
+                if (speakerBlocks.length === 0) {
+                    container.innerHTML = '<p class="text-red-500">Could not find any speaker blocks (`&lt;sp&gt;`) in the XML file. Please check the file structure and the query selector in the script.</p>';
                     return;
                 }
 
-                sections.forEach(section => {
-                    // Get the text content, which is in Beta Code
-                    const betaCode = section.textContent;
+                speakerBlocks.forEach(block => {
+                    // Find the speaker's name within the block
+                    const speakerNameBeta = block.querySelector('speaker')?.textContent;
+                    // Find the paragraph text within the block
+                    const paragraphBeta = block.querySelector('p')?.textContent;
+
+                    // Convert both to Unicode
+                    const speakerNameUnicode = betaCodeToUnicode(speakerNameBeta);
+                    const paragraphUnicode = betaCodeToUnicode(paragraphBeta);
+
+                    // Create elements to display the content
+                    if (speakerNameUnicode) {
+                        const speakerDiv = document.createElement('div');
+                        speakerDiv.className = 'speaker';
+                        speakerDiv.textContent = speakerNameUnicode;
+                        container.appendChild(speakerDiv);
+                    }
                     
-                    // Convert it to Unicode
-                    const unicodeText = betaCodeToUnicode(betaCode);
-                    
-                    // Create a new paragraph element and add it to the page
-                    const p = document.createElement('p');
-                    p.textContent = unicodeText;
-                    container.appendChild(p);
+                    if (paragraphUnicode) {
+                        const p = document.createElement('p');
+                        p.textContent = paragraphUnicode;
+                        container.appendChild(p);
+                    }
                 });
 
             } catch (error) {
@@ -193,3 +202,4 @@
     </script>
 </body>
 </html>
+
