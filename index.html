@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plato's Apology - Greek Text</title>
+    <title>Alkibiades I - Greek Text</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter font for clean typography -->
@@ -26,7 +26,7 @@
 
     <div class="container mx-auto max-w-4xl px-4 py-12">
         <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-gray-900">Plato's Apology (17a)</h1>
+            <h1 class="text-4xl font-bold text-gray-900">Alkibiades I</h1>
             <p class="text-lg text-gray-600 mt-2">Rendered from Beta Code XML</p>
         </header>
 
@@ -146,7 +146,7 @@
             
             try {
                 // Fetch the XML file
-                const response = await fetch('plato_text.xml');
+                const response = await fetch('Perseus_text_1999.01.0175.xml');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
