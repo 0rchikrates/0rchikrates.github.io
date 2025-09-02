@@ -68,21 +68,9 @@
     </div>
 
     <script>
-        // --- Beta Code to Unicode Conversion ---
-        // This is the core logic that translates the text.
+       function betaCodeToUnicode(betaCodeStr) {
+            if (!betaCodeStr) return '';
 
-        /**
-         * Converts a string from Greek Beta Code to Unicode.
-         * Handles capitalization, diacritics, and final sigmas.
-         * @param {string} betaCodeStr The Beta Code string to convert.
-         * @returns {string} The converted Unicode string.
-         */
-        function betaCodeToUnicode(betaCodeStr) {
-            if (!betaCodeStr) return ''; // Return empty string if input is null or undefined
-            
-            // Debug mode - uncomment the next line to see what's being processed
-            // console.log('Processing:', betaCodeStr);
-            
             const betaCodeMap = {
                 'A': 'α', 'B': 'β', 'C': 'ξ', 'D': 'δ', 'E': 'ε', 'F': 'φ', 'G': 'γ', 'H': 'η', 'I': 'ι', 'K': 'κ',
                 'L': 'λ', 'M': 'μ', 'N': 'ν', 'O': 'ο', 'P': 'π', 'Q': 'θ', 'R': 'ρ', 'S': 'σ', 'T': 'τ', 'U': 'υ',
@@ -96,7 +84,6 @@
                 '|': 'ͅ', // Iota subscript
             };
 
-            // Pre-combined characters for vowels with diacritics (lowercase)
             const combinedChars = {
                 'α': {'̓': 'ἀ', '̔': 'ἁ', '́': 'ά', '̀': 'ὰ', '͂': 'ᾶ', '̓́': 'ἄ', '̓̀': 'ἂ', '̓͂': 'ἆ', '̔́': 'ἅ', '̔̀': 'ἃ', '̔͂': 'ἇ'},
                 'ε': {'̓': 'ἐ', '̔': 'ἑ', '́': 'έ', '̀': 'ὲ', '̓́': 'ἔ', '̓̀': 'ἒ', '̔́': 'ἕ', '̔̀': 'ἓ'},
@@ -108,7 +95,6 @@
                 'ρ': {'̔': 'ῥ'}
             };
 
-            // Pre-combined characters for uppercase vowels with diacritics
             const combinedCharsUpper = {
                 'Α': {'̓': 'Ἀ', '̔': 'Ἁ', '́': 'Ά', '̀': 'Ὰ', '̓́': 'Ἄ', '̓̀': 'Ἂ', '̔́': 'Ἅ', '̔̀': 'Ἃ'},
                 'Ε': {'̓': 'Ἐ', '̔': 'Ἑ', '́': 'Έ', '̀': 'Ὲ', '̓́': 'Ἔ', '̓̀': 'Ἒ', '̔́': 'Ἕ', '̔̀': 'Ἓ'},
@@ -126,14 +112,14 @@
 
             for (let i = 0; i < text.length; i++) {
                 let char = text[i];
-                
+
                 if (char === '*') {
                     isUpperCase = true;
                     continue;
                 }
-                
+
                 let mappedChar = betaCodeMap[char];
-                
+
                 if (mappedChar) {
                     let diacritics = '';
                     while (i + 1 < text.length && '()=/\\+|'.includes(text[i + 1])) {
@@ -141,57 +127,40 @@
                         i++;
                     }
 
-                    let baseChar = mappedChar;
-                    let finalChar = baseChar;
-                    
-                    // Debug logging - uncomment to see what's happening
-                    // if (isUpperCase) console.log(`Processing uppercase ${char} with diacritics: ${diacritics}`);
-                    
-                    // Handle diacritic combinations
-                    if (diacritics) {
-                        if (isUpperCase) {
-                            // For uppercase, use the uppercase base character
-                            const upperBaseChar = baseChar.toUpperCase();
-                            if (combinedCharsUpper[upperBaseChar]) {
-                                const sortedDiacritics = diacritics.split('').sort().join('');
-                                if (combinedCharsUpper[upperBaseChar][sortedDiacritics]) {
-                                    finalChar = combinedCharsUpper[upperBaseChar][sortedDiacritics];
-                                } else if (combinedCharsUpper[upperBaseChar][diacritics]) {
-                                    finalChar = combinedCharsUpper[upperBaseChar][diacritics];
-                                } else {
-                                    finalChar = upperBaseChar + diacritics;
-                                }
-                            } else {
-                                finalChar = upperBaseChar + diacritics;
-                            }
+                    let finalChar;
+                    const baseChar = mappedChar;
+
+                    if (isUpperCase) {
+                        const upperBaseChar = baseChar.toUpperCase();
+                        if (diacritics && combinedCharsUpper[upperBaseChar]) {
+                            const sortedDiacritics = diacritics.split('').sort().join('');
+                            // Check for sorted and original diacritic order
+                            finalChar = combinedCharsUpper[upperBaseChar][sortedDiacritics] ||
+                                        combinedCharsUpper[upperBaseChar][diacritics] ||
+                                        (upperBaseChar + diacritics);
                         } else {
-                            // For lowercase
-                            if (combinedChars[baseChar]) {
-                                const sortedDiacritics = diacritics.split('').sort().join('');
-                                if (combinedChars[baseChar][sortedDiacritics]) {
-                                    finalChar = combinedChars[baseChar][sortedDiacritics];
-                                } else if (combinedChars[baseChar][diacritics]) {
-                                    finalChar = combinedChars[baseChar][diacritics];
-                                } else {
-                                    finalChar = baseChar + diacritics;
-                                }
+                            finalChar = upperBaseChar + diacritics;
+                        }
+                    } else { // Lowercase logic
+                        if (diacritics && combinedChars[baseChar]) {
+                            const sortedDiacritics = diacritics.split('').sort().join('');
+                            finalChar = combinedChars[baseChar][sortedDiacritics] ||
+                                        combinedChars[baseChar][diacritics] ||
+                                        (baseChar + diacritics);
+                        } else {
+                            // Handle final sigma for characters without diacritics
+                            if (baseChar === 'σ' && (i === text.length - 1 || !text[i + 1].match(/[A-Z]/))) {
+                                finalChar = 'ς';
                             } else {
                                 finalChar = baseChar + diacritics;
                             }
                         }
-                    } else if (isUpperCase) {
-                        finalChar = baseChar.toUpperCase();
                     }
 
-                    // Handle final sigma for lowercase
-                    if (!isUpperCase && baseChar === 'σ' && (i === text.length - 1 || !text[i + 1].match(/[A-Z]/))) {
-                        finalChar = 'ς';
-                    }
-                    
                     unicodeStr += finalChar;
-                    isUpperCase = false;
+                    isUpperCase = false; // Reset case for the next character
                 } else {
-                    unicodeStr += char;
+                    unicodeStr += char; // Append non-Greek characters as-is
                     isUpperCase = false;
                 }
             }
