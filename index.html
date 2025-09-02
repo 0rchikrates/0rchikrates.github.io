@@ -68,7 +68,7 @@
     </div>
 
     <script>
-      function betaCodeToUnicode(betaCodeStr) {
+     function betaCodeToUnicode(betaCodeStr) {
             if (!betaCodeStr) return '';
 
             const betaCodeMap = {
@@ -90,7 +90,7 @@
                 'η': {'̓': 'ἠ', '̔': 'ἡ', '́': 'ή', '̀': 'ὴ', '͂': 'ῆ', 'ͅ': 'ῃ', '̓́': 'ἤ', '̓̀': 'ἢ', '̓͂': 'ἦ', '̔́': 'ἥ', '̔̀': 'ἣ', '̔͂': 'ἧ', '̓ͅ': 'ᾐ', '̔ͅ': 'ᾑ', '́ͅ': 'ῄ', '̀ͅ': 'ῂ', '͂ͅ': 'ῇ'},
                 'ι': {'̓': 'ἰ', '̔': 'ἱ', '́': 'ί', '̀': 'ὶ', '͂': 'ῖ', '̈': 'ϊ', '̓́': 'ἴ', '̓̀': 'ἲ', '̓͂': 'ἶ', '̔́': 'ἵ', '̔̀': 'ἳ', '̔͂': 'ἷ', '́̈': 'ΐ', '̀̈': 'ῒ'},
                 'ο': {'̓': 'ὀ', '̔': 'ὁ', '́': 'ό', '̀': 'ὸ', '̓́': 'ὄ', '̓̀': 'ὂ', '̔́': 'ὅ', '̔̀': 'ὃ'},
-                'υ': {'̓': 'ὐ', '̔': 'ὑ', '́': 'ύ', '̀': 'ὺ', '͂': 'ῦ', '̈': 'ϋ', '̓́': 'ὔ', '̓̀': 'ὒ', '̓͂': 'ὖ', '̔́': 'ὕ', '̔̀': 'ὓ', '̔͂': 'ὗ', '́̈': 'ΰ', '̀̈': 'ῢ'},
+                'υ': {'̓': 'ὐ', '̔': 'ὑ', '́': 'ύ', '̀': 'ὺ', '͂': 'ῦ', '̈': 'ϋ', '̓́': 'ὔ', '̓̀': 'ᒒ', '̓͂': 'ὖ', '̔́': 'ὕ', '̔̀': 'ὓ', '̔͂': 'ὗ', '́̈': 'ΰ', '̀̈': 'ῢ'},
                 'ω': {'̓': 'ὠ', '̔': 'ὡ', '́': 'ώ', '̀': 'ὼ', '͂': 'ῶ', 'ͅ': 'ῳ', '̓́': 'ὤ', '̓̀': 'ὢ', '̓͂': 'ὦ', '̔́': 'ὥ', '̔̀': 'ὣ', '̔͂': 'ὧ', '̓ͅ': 'ᾠ', '̔ͅ': 'ᾡ', '́ͅ': 'ῴ', '̀ͅ': 'ῲ', '͂ͅ': 'ῷ'},
                 'ρ': {'̔': 'ῥ'}
             };
@@ -118,7 +118,7 @@
                     continue;
                 }
 
-                let mappedChar = betaCodeMap[char];
+                const mappedChar = betaCodeMap[char];
 
                 if (mappedChar) {
                     let diacritics = '';
@@ -130,31 +130,20 @@
                     let finalChar;
                     const baseChar = mappedChar;
 
-                    // This new logic is clearer and handles all cases correctly.
                     if (isUpperCase) {
                         const upperBaseChar = baseChar.toUpperCase();
-                        if (diacritics) {
-                            const map = combinedCharsUpper[upperBaseChar];
-                            if (map) {
-                                const sortedDiacritics = diacritics.split('').sort().join('');
-                                finalChar = map[sortedDiacritics] || map[diacritics] || (upperBaseChar + diacritics);
-                            } else {
-                                finalChar = upperBaseChar + diacritics;
-                            }
+                        if (diacritics && combinedCharsUpper[upperBaseChar] && combinedCharsUpper[upperBaseChar][diacritics]) {
+                            finalChar = combinedCharsUpper[upperBaseChar][diacritics];
                         } else {
-                            finalChar = upperBaseChar;
+                            finalChar = upperBaseChar + diacritics;
                         }
-                    } else { // It's lowercase
-                        if (diacritics) {
-                            const map = combinedChars[baseChar];
-                            if (map) {
-                                const sortedDiacritics = diacritics.split('').sort().join('');
-                                finalChar = map[sortedDiacritics] || map[diacritics] || (baseChar + diacritics);
-                            } else {
-                                finalChar = baseChar + diacritics;
-                            }
+                    } else { // Lowercase
+                        if (diacritics && combinedChars[baseChar] && combinedChars[baseChar][diacritics]) {
+                            finalChar = combinedChars[baseChar][diacritics];
+                        } else if (diacritics) {
+                            finalChar = baseChar + diacritics;
                         } else {
-                            // Only handle final sigma for plain characters without diacritics.
+                            // Handle final sigma only for plain sigmas
                             if (baseChar === 'σ' && (i === text.length - 1 || !text[i + 1].match(/[A-Z]/))) {
                                 finalChar = 'ς';
                             } else {
@@ -164,7 +153,7 @@
                     }
 
                     unicodeStr += finalChar;
-                    isUpperCase = false; // Reset for the next character.
+                    isUpperCase = false;
                 } else {
                     unicodeStr += char;
                     isUpperCase = false;
@@ -172,7 +161,6 @@
             }
             return unicodeStr;
         }
-
 
         // --- XML Loading and Display ---
         
