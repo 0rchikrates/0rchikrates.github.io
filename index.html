@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plato's Alcibiades - Greek Text - Erste stabile Version</title>
+    <title>Plato's Alcibiades - Greek Text</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter font for clean typography -->
@@ -93,7 +93,7 @@
                 '|': 'ͅ', // Iota subscript
             };
 
-            // Pre-combined characters for vowels with diacritics
+            // Pre-combined characters for vowels with diacritics (lowercase)
             const combinedChars = {
                 'α': {'̓': 'ἀ', '̔': 'ἁ', '́': 'ά', '̀': 'ὰ', '͂': 'ᾶ', '̓́': 'ἄ', '̓̀': 'ἂ', '̓͂': 'ἆ', '̔́': 'ἅ', '̔̀': 'ἃ', '̔͂': 'ἇ'},
                 'ε': {'̓': 'ἐ', '̔': 'ἑ', '́': 'έ', '̀': 'ὲ', '̓́': 'ἔ', '̓̀': 'ἒ', '̔́': 'ἕ', '̔̀': 'ἓ'},
@@ -103,6 +103,18 @@
                 'υ': {'̓': 'ὐ', '̔': 'ὑ', '́': 'ύ', '̀': 'ὺ', '͂': 'ῦ', '̈': 'ϋ', '̓́': 'ὔ', '̓̀': 'ὒ', '̓͂': 'ὖ', '̔́': 'ὕ', '̔̀': 'ὓ', '̔͂': 'ὗ', '́̈': 'ΰ', '̀̈': 'ῢ'},
                 'ω': {'̓': 'ὠ', '̔': 'ὡ', '́': 'ώ', '̀': 'ὼ', '͂': 'ῶ', 'ͅ': 'ῳ', '̓́': 'ὤ', '̓̀': 'ὢ', '̓͂': 'ὦ', '̔́': 'ὥ', '̔̀': 'ὣ', '̔͂': 'ὧ', '̓ͅ': 'ᾠ', '̔ͅ': 'ᾡ', '́ͅ': 'ῴ', '̀ͅ': 'ῲ', '͂ͅ': 'ῷ'},
                 'ρ': {'̔': 'ῥ'}
+            };
+
+            // Pre-combined characters for uppercase vowels with diacritics
+            const combinedCharsUpper = {
+                'Α': {'̓': 'Ἀ', '̔': 'Ἁ', '́': 'Ά', '̀': 'Ὰ', '͂': 'Α͂', '̓́': 'Ἄ', '̓̀': 'Ἂ', '̓͂': 'Ἆ', '̔́': 'Ἅ', '̔̀': 'Ἃ', '̔͂': 'Ἇ'},
+                'Ε': {'̓': 'Ἐ', '̔': 'Ἑ', '́': 'Έ', '̀': 'Ὲ', '̓́': 'Ἔ', '̓̀': 'Ἒ', '̔́': 'Ἕ', '̔̀': 'Ἓ'},
+                'Η': {'̓': 'Ἠ', '̔': 'Ἡ', '́': 'Ή', '̀': 'Ὴ', '͂': 'Η͂', 'ͅ': 'ῌ', '̓́': 'Ἤ', '̓̀': 'Ἢ', '̓͂': 'Ἦ', '̔́': 'Ἥ', '̔̀': 'Ἣ', '̔͂': 'Ἧ', '̓ͅ': 'ᾘ', '̔ͅ': 'ᾙ', '́ͅ': 'ῌ', '̀ͅ': 'ῂ', '͂ͅ': 'ῇ'},
+                'Ι': {'̓': 'Ἰ', '̔': 'Ἱ', '́': 'Ί', '̀': 'Ὶ', '͂': 'Ι͂', '̈': 'Ϊ', '̓́': 'Ἴ', '̓̀': 'Ἲ', '̓͂': 'Ἶ', '̔́': 'Ἵ', '̔̀': 'Ἳ', '̔͂': 'Ἷ'},
+                'Ο': {'̓': 'Ὀ', '̔': 'Ὁ', '́': 'Ό', '̀': 'Ὸ', '̓́': 'Ὄ', '̓̀': 'Ὂ', '̔́': 'Ὅ', '̔̀': 'Ὃ'},
+                'Υ': {'̔': 'Ὑ', '́': 'Ύ', '̀': 'Ὺ', '͂': 'Υ͂', '̈': 'Ϋ', '̔́': 'Ὕ', '̔̀': 'Ὓ', '̔͂': 'Ὗ'},
+                'Ω': {'̓': 'Ὠ', '̔': 'Ὡ', '́': 'Ώ', '̀': 'Ὼ', '͂': 'Ω͂', 'ͅ': 'ῼ', '̓́': 'Ὤ', '̓̀': 'Ὢ', '̓͂': 'Ὦ', '̔́': 'Ὥ', '̔̀': 'Ὣ', '̔͂': 'Ὧ', '̓ͅ': 'ᾨ', '̔ͅ': 'ᾩ', '́ͅ': 'ῼ', '̀ͅ': 'ῲ', '͂ͅ': 'ῷ'},
+                'Ρ': {'̔': 'Ῥ'}
             };
 
             let unicodeStr = '';
@@ -129,25 +141,34 @@
                     let baseChar = mappedChar;
                     let finalChar = baseChar;
                     
-                    if (diacritics && combinedChars[baseChar]) {
-                        const sortedDiacritics = diacritics.split('').sort().join('');
-                        if(combinedChars[baseChar][sortedDiacritics]) {
-                             finalChar = combinedChars[baseChar][sortedDiacritics];
-                        } else if (combinedChars[baseChar][diacritics]) {
-                            finalChar = combinedChars[baseChar][diacritics];
+                    // Handle diacritic combinations
+                    if (diacritics) {
+                        const charMap = isUpperCase ? combinedCharsUpper : combinedChars;
+                        const targetChar = isUpperCase ? baseChar.toUpperCase() : baseChar;
+                        
+                        if (charMap[targetChar]) {
+                            const sortedDiacritics = diacritics.split('').sort().join('');
+                            if (charMap[targetChar][sortedDiacritics]) {
+                                finalChar = charMap[targetChar][sortedDiacritics];
+                            } else if (charMap[targetChar][diacritics]) {
+                                finalChar = charMap[targetChar][diacritics];
+                            } else {
+                                finalChar = targetChar + diacritics;
+                            }
                         } else {
-                            finalChar = baseChar + diacritics;
+                            finalChar = targetChar + diacritics;
                         }
+                    } else if (isUpperCase) {
+                        finalChar = baseChar.toUpperCase();
                     }
 
-                    if (isUpperCase) {
-                        finalChar = finalChar.toUpperCase();
-                        isUpperCase = false;
-                    } else if (baseChar === 'σ' && (i === text.length - 1 || !text[i + 1].match(/[A-Z]/))) {
+                    // Handle final sigma for lowercase
+                    if (!isUpperCase && baseChar === 'σ' && (i === text.length - 1 || !text[i + 1].match(/[A-Z]/))) {
                         finalChar = 'ς';
                     }
                     
                     unicodeStr += finalChar;
+                    isUpperCase = false;
                 } else {
                     unicodeStr += char;
                     isUpperCase = false;
