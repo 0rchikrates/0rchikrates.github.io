@@ -80,6 +80,9 @@
         function betaCodeToUnicode(betaCodeStr) {
             if (!betaCodeStr) return ''; // Return empty string if input is null or undefined
             
+            // Debug mode - uncomment the next line to see what's being processed
+            // console.log('Processing:', betaCodeStr);
+            
             const betaCodeMap = {
                 'A': 'α', 'B': 'β', 'C': 'ξ', 'D': 'δ', 'E': 'ε', 'F': 'φ', 'G': 'γ', 'H': 'η', 'I': 'ι', 'K': 'κ',
                 'L': 'λ', 'M': 'μ', 'N': 'ν', 'O': 'ο', 'P': 'π', 'Q': 'θ', 'R': 'ρ', 'S': 'σ', 'T': 'τ', 'U': 'υ',
@@ -107,13 +110,13 @@
 
             // Pre-combined characters for uppercase vowels with diacritics
             const combinedCharsUpper = {
-                'Α': {'̓': 'Ἀ', '̔': 'Ἁ', '́': 'Ά', '̀': 'Ὰ', '͂': 'Α͂', '̓́': 'Ἄ', '̓̀': 'Ἂ', '̓͂': 'Ἆ', '̔́': 'Ἅ', '̔̀': 'Ἃ', '̔͂': 'Ἇ'},
+                'Α': {'̓': 'Ἀ', '̔': 'Ἁ', '́': 'Ά', '̀': 'Ὰ', '̓́': 'Ἄ', '̓̀': 'Ἂ', '̔́': 'Ἅ', '̔̀': 'Ἃ'},
                 'Ε': {'̓': 'Ἐ', '̔': 'Ἑ', '́': 'Έ', '̀': 'Ὲ', '̓́': 'Ἔ', '̓̀': 'Ἒ', '̔́': 'Ἕ', '̔̀': 'Ἓ'},
-                'Η': {'̓': 'Ἠ', '̔': 'Ἡ', '́': 'Ή', '̀': 'Ὴ', '͂': 'Η͂', 'ͅ': 'ῌ', '̓́': 'Ἤ', '̓̀': 'Ἢ', '̓͂': 'Ἦ', '̔́': 'Ἥ', '̔̀': 'Ἣ', '̔͂': 'Ἧ', '̓ͅ': 'ᾘ', '̔ͅ': 'ᾙ', '́ͅ': 'ῌ', '̀ͅ': 'ῂ', '͂ͅ': 'ῇ'},
-                'Ι': {'̓': 'Ἰ', '̔': 'Ἱ', '́': 'Ί', '̀': 'Ὶ', '͂': 'Ι͂', '̈': 'Ϊ', '̓́': 'Ἴ', '̓̀': 'Ἲ', '̓͂': 'Ἶ', '̔́': 'Ἵ', '̔̀': 'Ἳ', '̔͂': 'Ἷ'},
+                'Η': {'̓': 'Ἠ', '̔': 'Ἡ', '́': 'Ή', '̀': 'Ὴ', '̓́': 'Ἤ', '̓̀': 'Ἢ', '̔́': 'Ἥ', '̔̀': 'Ἣ', 'ͅ': 'ῌ', '̓ͅ': 'ᾘ', '̔ͅ': 'ᾙ'},
+                'Ι': {'̓': 'Ἰ', '̔': 'Ἱ', '́': 'Ί', '̀': 'Ὶ', '̈': 'Ϊ', '̓́': 'Ἴ', '̓̀': 'Ἲ', '̔́': 'Ἵ', '̔̀': 'Ἳ'},
                 'Ο': {'̓': 'Ὀ', '̔': 'Ὁ', '́': 'Ό', '̀': 'Ὸ', '̓́': 'Ὄ', '̓̀': 'Ὂ', '̔́': 'Ὅ', '̔̀': 'Ὃ'},
-                'Υ': {'̔': 'Ὑ', '́': 'Ύ', '̀': 'Ὺ', '͂': 'Υ͂', '̈': 'Ϋ', '̔́': 'Ὕ', '̔̀': 'Ὓ', '̔͂': 'Ὗ'},
-                'Ω': {'̓': 'Ὠ', '̔': 'Ὡ', '́': 'Ώ', '̀': 'Ὼ', '͂': 'Ω͂', 'ͅ': 'ῼ', '̓́': 'Ὤ', '̓̀': 'Ὢ', '̓͂': 'Ὦ', '̔́': 'Ὥ', '̔̀': 'Ὣ', '̔͂': 'Ὧ', '̓ͅ': 'ᾨ', '̔ͅ': 'ᾩ', '́ͅ': 'ῼ', '̀ͅ': 'ῲ', '͂ͅ': 'ῷ'},
+                'Υ': {'̔': 'Ὑ', '́': 'Ύ', '̀': 'Ὺ', '̈': 'Ϋ', '̔́': 'Ὕ', '̔̀': 'Ὓ'},
+                'Ω': {'̓': 'Ὠ', '̔': 'Ὡ', '́': 'Ώ', '̀': 'Ὼ', '̓́': 'Ὤ', '̓̀': 'Ὢ', '̔́': 'Ὥ', '̔̀': 'Ὣ', 'ͅ': 'ῼ', '̓ͅ': 'ᾨ', '̔ͅ': 'ᾩ'},
                 'Ρ': {'̔': 'Ῥ'}
             };
 
@@ -141,22 +144,40 @@
                     let baseChar = mappedChar;
                     let finalChar = baseChar;
                     
+                    // Debug logging - uncomment to see what's happening
+                    // if (isUpperCase) console.log(`Processing uppercase ${char} with diacritics: ${diacritics}`);
+                    
                     // Handle diacritic combinations
                     if (diacritics) {
-                        const charMap = isUpperCase ? combinedCharsUpper : combinedChars;
-                        const targetChar = isUpperCase ? baseChar.toUpperCase() : baseChar;
-                        
-                        if (charMap[targetChar]) {
-                            const sortedDiacritics = diacritics.split('').sort().join('');
-                            if (charMap[targetChar][sortedDiacritics]) {
-                                finalChar = charMap[targetChar][sortedDiacritics];
-                            } else if (charMap[targetChar][diacritics]) {
-                                finalChar = charMap[targetChar][diacritics];
+                        if (isUpperCase) {
+                            // For uppercase, use the uppercase base character
+                            const upperBaseChar = baseChar.toUpperCase();
+                            if (combinedCharsUpper[upperBaseChar]) {
+                                const sortedDiacritics = diacritics.split('').sort().join('');
+                                if (combinedCharsUpper[upperBaseChar][sortedDiacritics]) {
+                                    finalChar = combinedCharsUpper[upperBaseChar][sortedDiacritics];
+                                } else if (combinedCharsUpper[upperBaseChar][diacritics]) {
+                                    finalChar = combinedCharsUpper[upperBaseChar][diacritics];
+                                } else {
+                                    finalChar = upperBaseChar + diacritics;
+                                }
                             } else {
-                                finalChar = targetChar + diacritics;
+                                finalChar = upperBaseChar + diacritics;
                             }
                         } else {
-                            finalChar = targetChar + diacritics;
+                            // For lowercase
+                            if (combinedChars[baseChar]) {
+                                const sortedDiacritics = diacritics.split('').sort().join('');
+                                if (combinedChars[baseChar][sortedDiacritics]) {
+                                    finalChar = combinedChars[baseChar][sortedDiacritics];
+                                } else if (combinedChars[baseChar][diacritics]) {
+                                    finalChar = combinedChars[baseChar][diacritics];
+                                } else {
+                                    finalChar = baseChar + diacritics;
+                                }
+                            } else {
+                                finalChar = baseChar + diacritics;
+                            }
                         }
                     } else if (isUpperCase) {
                         finalChar = baseChar.toUpperCase();
