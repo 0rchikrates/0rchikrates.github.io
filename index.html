@@ -108,7 +108,8 @@
 
     let unicodeStr = '';
     let isUpperCase = false;
-    let text = betaCodeStr.trim();
+    // **FIX:** Normalize the entire input string to uppercase first for consistency.
+    let text = betaCodeStr.toUpperCase().trim();
 
     for (let i = 0; i < text.length; i++) {
         let char = text[i];
@@ -118,7 +119,7 @@
             continue;
         }
 
-        const mappedChar = betaCodeMap[char.toUpperCase()];
+        const mappedChar = betaCodeMap[char];
 
         if (mappedChar) {
             let diacritics = '';
@@ -132,18 +133,22 @@
 
             if (isUpperCase) {
                 const upperBaseChar = baseChar.toUpperCase();
+                // Check for a pre-combined character in the uppercase map.
                 if (diacritics && combinedCharsUpper[upperBaseChar] && combinedCharsUpper[upperBaseChar][diacritics]) {
                     finalChar = combinedCharsUpper[upperBaseChar][diacritics];
                 } else {
+                    // Fallback: use the base uppercase letter + combining diacritic marks.
                     finalChar = upperBaseChar + diacritics;
                 }
-            } else {
+            } else { // Logic for lowercase characters
+                // Check for a pre-combined character in the lowercase map.
                 if (diacritics && combinedChars[baseChar] && combinedChars[baseChar][diacritics]) {
                     finalChar = combinedChars[baseChar][diacritics];
                 } else if (diacritics) {
                     finalChar = baseChar + diacritics;
                 } else {
-                    if (baseChar === 'σ' && (i === text.length - 1 || !/[A-Za-z]/.test(text[i + 1]))) {
+                    // Handle final sigma only for plain sigmas without diacritics.
+                    if (baseChar === 'σ' && (i === text.length - 1 || !/[A-Z]/.test(text[i + 1]))) {
                         finalChar = 'ς';
                     } else {
                         finalChar = baseChar;
@@ -154,7 +159,7 @@
             unicodeStr += finalChar;
             isUpperCase = false;
         } else {
-            unicodeStr += char;
+            unicodeStr += char; // Append non-Greek characters (like punctuation or spaces)
             isUpperCase = false;
         }
     }
