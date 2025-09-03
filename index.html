@@ -108,7 +108,7 @@
 
     let unicodeStr = '';
     let isUpperCase = false;
-    // **FIX:** Normalize the entire input string to uppercase first for consistency.
+    // **THE FIX:** Convert the entire input string to uppercase at the start.
     let text = betaCodeStr.toUpperCase().trim();
 
     for (let i = 0; i < text.length; i++) {
@@ -119,10 +119,12 @@
             continue;
         }
 
+        // Now we can directly look up the character since 'text' is already uppercase.
         const mappedChar = betaCodeMap[char];
 
         if (mappedChar) {
             let diacritics = '';
+            // This loop correctly gathers all following diacritics for the current letter.
             while (i + 1 < text.length && '()=/\\+|'.includes(text[i + 1])) {
                 diacritics += betaCodeMap[text[i + 1]];
                 i++;
@@ -133,21 +135,18 @@
 
             if (isUpperCase) {
                 const upperBaseChar = baseChar.toUpperCase();
-                // Check for a pre-combined character in the uppercase map.
                 if (diacritics && combinedCharsUpper[upperBaseChar] && combinedCharsUpper[upperBaseChar][diacritics]) {
                     finalChar = combinedCharsUpper[upperBaseChar][diacritics];
                 } else {
-                    // Fallback: use the base uppercase letter + combining diacritic marks.
                     finalChar = upperBaseChar + diacritics;
                 }
-            } else { // Logic for lowercase characters
-                // Check for a pre-combined character in the lowercase map.
+            } else { // Lowercase
                 if (diacritics && combinedChars[baseChar] && combinedChars[baseChar][diacritics]) {
                     finalChar = combinedChars[baseChar][diacritics];
                 } else if (diacritics) {
                     finalChar = baseChar + diacritics;
                 } else {
-                    // Handle final sigma only for plain sigmas without diacritics.
+                    // Handle final sigma correctly only for plain sigmas
                     if (baseChar === 'σ' && (i === text.length - 1 || !/[A-Z]/.test(text[i + 1]))) {
                         finalChar = 'ς';
                     } else {
@@ -155,11 +154,10 @@
                     }
                 }
             }
-
             unicodeStr += finalChar;
             isUpperCase = false;
         } else {
-            unicodeStr += char; // Append non-Greek characters (like punctuation or spaces)
+            unicodeStr += char; // Append non-mapped characters like punctuation
             isUpperCase = false;
         }
     }
