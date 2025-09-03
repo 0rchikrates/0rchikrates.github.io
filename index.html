@@ -107,75 +107,53 @@
                 'Ρ': {'̔': 'Ῥ'}
             };
 
+            let unicodeStr = "";
             let text = betaCodeStr.toUpperCase().trim();
-            let unicodeChars = [];
+            let i = 0;
 
-            for (let i = 0; i < text.length; i++) {
+            while (i < text.length) {
                 let char = text[i];
                 let isUpperCase = false;
-                let preDiacritics = '';
+                let diacritics = "";
 
-                // Check for leading capitalization mark '*'
                 if (char === '*') {
                     isUpperCase = true;
-                    i++; // Move to the next character
+                    i++;
                     char = text[i];
                 }
 
-                // **THE FIX**: Handle capitalization where breathing mark comes BEFORE the vowel
-                // This is common for XML sources like Perseus (e.g., *)HRAKLE/OUS)
                 if (isUpperCase && '()'.includes(char)) {
-                    preDiacritics = betaCodeMap[char];
-                    i++; // Move to the actual vowel
+                    diacritics += betaCodeMap[char];
+                    i++;
                     char = text[i];
                 }
-
+                
                 let mappedChar = betaCodeMap[char];
+
                 if (mappedChar) {
-                    let postDiacritics = '';
-                    while (i + 1 < text.length && '=/\\+|'.includes(text[i + 1])) {
-                        postDiacritics += betaCodeMap[text[i + 1]];
+                    while (i + 1 < text.length && '()/=\\+|'.includes(text[i + 1])) {
+                        diacritics += betaCodeMap[text[i + 1]];
                         i++;
                     }
 
-                    let diacritics = preDiacritics + postDiacritics;
                     let finalChar;
-                    
                     if (isUpperCase) {
                         const upperBaseChar = mappedChar.toUpperCase();
-                        if (diacritics && combinedCharsUpper[upperBaseChar] && combinedCharsUpper[upperBaseChar][diacritics]) {
-                            finalChar = combinedCharsUpper[upperBaseChar][diacritics];
-                        } else {
-                            finalChar = upperBaseChar + diacritics;
-                        }
+                        finalChar = combinedCharsUpper[upperBaseChar]?.[diacritics] || (upperBaseChar + diacritics);
                     } else {
-                        // Standard lowercase logic
-                        if (diacritics && combinedChars[mappedChar] && combinedChars[mappedChar][diacritics]) {
-                           finalChar = combinedChars[mappedChar][diacritics];
-                        } else {
-                           finalChar = mappedChar + diacritics;
-                        }
+                        finalChar = combinedChars[mappedChar]?.[diacritics] || (mappedChar + diacritics);
                     }
-                    unicodeChars.push(finalChar);
+                    unicodeStr += finalChar;
                 } else {
-                    unicodeChars.push(char); // Punctuation, numbers, etc.
+                    unicodeStr += char;
                 }
+                i++;
             }
-
-            // Final sigma conversion pass
-            let result = '';
-            for (let i = 0; i < unicodeChars.length; i++) {
-                let char = unicodeChars[i];
-                // Check if it's a sigma and if it's at the end of a word
-                if (char === 'σ' && (i === unicodeChars.length - 1 || !unicodeChars[i + 1].match(/[α-ωΑ-Ω]/))) {
-                    result += 'ς';
-                } else {
-                    result += char;
-                }
-            }
-            return result;
+            
+            // Final sigma conversion is tricky; a simple replace after the fact is more reliable
+            // It replaces any sigma that is followed by a non-letter character or is at the end of the string.
+            return unicodeStr.replace(/σ(?=[^α-ωΑ-Ω]|$)/g, 'ς');
         }
-
 
         // --- XML Loading and Display ---
         
@@ -188,7 +166,7 @@
 
         function processNode(node, container) {
             if (node.nodeType === Node.TEXT_NODE) {
-                const text = node.textContent; // Don't trim here, preserve spacing
+                const text = node.textContent;
                 if (text) {
                     const textNode = document.createTextNode(betaCodeToUnicode(text));
                     container.appendChild(textNode);
@@ -201,7 +179,11 @@
                         container.appendChild(createMilestone(unit, n));
                         container.appendChild(document.createTextNode(' '));
                     }
-                } else {
+                } else if (node.tagName === 'add' || node.tagName === 'del') {
+                    // Skip rendering content of <add> and <del> tags for a cleaner text
+                    return;
+                }
+                else {
                     for (let child of node.childNodes) {
                         processNode(child, container);
                     }
@@ -230,25 +212,18 @@
                     return;
                 }
                 
-                let speakerBlocks = xmlDoc.getElementsByTagName('sp');
-
-                if (speakerBlocks.length === 0) {
-                     // Fallback for different structures (as in original script)
-                    const allParagraphs = xmlDoc.getElementsByTagName('p');
-                    if (allParagraphs.length > 0) {
-                        container.innerHTML = '<div class="speaker">Text Content</div>';
-                        for (let p of allParagraphs) {
-                            const pElement = document.createElement('p');
-                            processNode(p, pElement);
-                            container.appendChild(pElement);
-                        }
-                    }
+                // Find the first text body to display (e.g., Alc. 1)
+                const body = xmlDoc.querySelector('text[n="Alc. 1"] > body');
+                if (!body) {
+                    container.innerHTML = '<p class="text-red-500">Could not find the text body for Alcibiades 1 in the XML file.</p>';
                     return;
                 }
+                
+                let speakerBlocks = body.getElementsByTagName('sp');
 
                 Array.from(speakerBlocks).forEach(block => {
                     const speakerElement = block.getElementsByTagName('speaker')[0];
-                    const paragraphElement = block.getElementsByTagName('p')[0];
+                    const paragraphElements = block.getElementsByTagName('p');
                     
                     if (speakerElement) {
                         const speakerDiv = document.createElement('div');
@@ -257,11 +232,11 @@
                         container.appendChild(speakerDiv);
                     }
                     
-                    if (paragraphElement) {
-                        const p = document.createElement('p');
-                        processNode(paragraphElement, p);
-                        container.appendChild(p);
-                    }
+                    Array.from(paragraphElements).forEach(p_el => {
+                         const p = document.createElement('p');
+                         processNode(p_el, p);
+                         container.appendChild(p);
+                    });
                 });
 
             } catch (error) {
