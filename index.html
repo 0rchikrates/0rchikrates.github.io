@@ -3,69 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plato's Alcibiades - Greek Text</title>
+    <title>Plato's Alcibiades I - Greek Text</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Inter font for clean typography -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
         }
-        /* Style for the Greek text paragraphs */
-        .greek-text p {
-            margin-bottom: 1.5rem;
-            line-height: 1.8;
-            font-size: 1.25rem;
+
+        .greek-text {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.125rem;
+            line-height: 1.75;
+            color: #1f2937;
         }
-        .speaker {
+
+        .text-section {
+            background: white;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-left: 4px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .text-section:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .speaker-name {
+            font-family: 'Inter', sans-serif;
             font-weight: 700;
-            color: #111827; /* gray-900 */
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f3f4f6;
         }
+
+        .speaker-name.socrates {
+            color: #dc2626;
+            border-bottom-color: #fecaca;
+        }
+
+        .speaker-name.alcibiades {
+            color: #2563eb;
+            border-bottom-color: #dbeafe;
+        }
+
+        .section-content {
+            margin-bottom: 0;
+        }
+
         .milestone {
             display: inline-block;
+            font-family: 'Inter', sans-serif;
             font-weight: 600;
-            font-size: 0.875rem;
-            padding: 0.25rem 0.5rem;
-            margin: 0.5rem 0;
-            border-radius: 0.375rem;
-            background-color: #f3f4f6; /* gray-100 */
-            color: #374151; /* gray-700 */
-            border: 1px solid #d1d5db; /* gray-300 */
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            margin: 0 0.5rem 0.5rem 0;
+            border-radius: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
         }
+
         .milestone.page {
-            background-color: #dbeafe; /* blue-100 */
-            color: #1e40af; /* blue-800 */
-            border-color: #93c5fd; /* blue-300 */
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
         }
+
         .milestone.section {
-            background-color: #d1fae5; /* green-100 */
-            color: #065f46; /* green-800 */
-            border-color: #86efac; /* green-300 */
+            background: linear-gradient(135deg, #10b981, #047857);
+            color: white;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+        }
+
+        .milestone-container {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading-animation {
+            display: inline-block;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+
+        .container-main {
+            max-width: 5xl;
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
-
-    <div class="container mx-auto max-w-4xl px-4 py-12">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-gray-900">Plato's Alcibiades</h1>
-            <p class="text-lg text-gray-600 mt-2">Rendered from Beta Code XML</p>
+<body>
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="text-center py-16 px-4">
+            <h1 class="text-6xl font-bold header-gradient mb-4">
+                Πλάτωνος Ἀλκιβιάδης
+            </h1>
+            <p class="text-xl text-gray-600 mb-2">Plato's Alcibiades I</p>
+            <p class="text-sm text-gray-500 uppercase tracking-wide">Perseus Digital Library • Beta Code to Unicode</p>
         </header>
 
-        <!-- The Greek text will be loaded here -->
-        <main id="text-container" class="bg-white p-8 rounded-lg shadow-md greek-text">
-            <p class="text-gray-500">Loading text...</p>
+        <!-- Main Content -->
+        <main class="container mx-auto container-main px-4 pb-16">
+            <div id="text-container" class="space-y-6">
+                <div class="text-section">
+                    <p class="text-gray-500 loading-animation">Loading ancient Greek text...</p>
+                </div>
+            </div>
         </main>
 
-        <footer class="text-center mt-10 text-gray-500 text-sm">
-            <p>A simple Greek text viewer. Built for GitHub Pages.</p>
+        <!-- Footer -->
+        <footer class="text-center py-8 px-4 border-t border-gray-200 bg-white/50">
+            <p class="text-gray-500 text-sm">
+                A scholarly text viewer for ancient Greek literature
+            </p>
+            <p class="text-gray-400 text-xs mt-2">
+                Built with modern web technologies for classical studies
+            </p>
         </footer>
     </div>
+
 
     <script>
         // --- Beta Code to Unicode Conversion ---
@@ -153,6 +238,56 @@
             // Final sigma conversion is tricky; a simple replace after the fact is more reliable
             // It replaces any sigma that is followed by a non-letter character or is at the end of the string.
             return unicodeStr.replace(/σ(?=[^α-ωΑ-Ω]|$)/g, 'ς');
+        }
+
+        
+        // --- Enhanced Milestone and Section Handling ---
+        function createMilestone(unit, n) {
+            const milestone = document.createElement('span');
+            milestone.className = `milestone ${unit}`;
+            milestone.textContent = unit === 'page' ? `Page ${n}` : `§ ${n}`;
+            return milestone;
+        }
+
+        function createTextSection() {
+            const section = document.createElement('div');
+            section.className = 'text-section';
+            return section;
+        }
+
+        function getSpeakerClass(speakerName) {
+            const name = speakerName.toLowerCase();
+            if (name.includes('σω') || name.includes('socr')) return 'socrates';
+            if (name.includes('αλκ') || name.includes('alcib')) return 'alcibiades';
+            return '';
+        }
+
+        function processNode(node, container) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent.trim();
+                if (text) {
+                    const textNode = document.createTextNode(betaCodeToUnicode(text));
+                    container.appendChild(textNode);
+                }
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.tagName === 'milestone') {
+                    const unit = node.getAttribute('unit');
+                    const n = node.getAttribute('n');
+                    if (unit && n) {
+                        let milestoneContainer = container.querySelector('.milestone-container');
+                        if (!milestoneContainer) {
+                            milestoneContainer = document.createElement('div');
+                            milestoneContainer.className = 'milestone-container';
+                            container.insertBefore(milestoneContainer, container.firstChild);
+                        }
+                        milestoneContainer.appendChild(createMilestone(unit, n));
+                    }
+                } else {
+                    for (let child of node.childNodes) {
+                        processNode(child, container);
+                    }
+                }
+            }
         }
 
         // --- XML Loading and Display ---
